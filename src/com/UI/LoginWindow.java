@@ -66,6 +66,7 @@ public class LoginWindow extends JFrame {
 
         btnSignUp.addActionListener(e -> {
             new SignUpWindow().setVisible(true);
+            dispose();
         });
         
         setVisible(true);

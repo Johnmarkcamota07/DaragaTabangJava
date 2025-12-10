@@ -1,5 +1,6 @@
 package com.UI;
 
+import com.main.Main;
 import com.utils.UserManager;
 import java.awt.*;
 import javax.swing.*; 
@@ -41,6 +42,7 @@ public class SignUpWindow extends JFrame {
             if (manager.registerUser(user, pass, name)) {
                 System.out.println("Registration Successful!");
                 JOptionPane.showMessageDialog(this, "Success! Please Login.");
+                new Main().setVisible(true);
                 dispose();
             } else {
                 System.out.println("Username taken");
@@ -48,7 +50,10 @@ public class SignUpWindow extends JFrame {
             }
         });
 
-        btnCancel.addActionListener(e -> dispose());
+        btnCancel.addActionListener(e -> {
+            new Main().setVisible(true);
+            dispose();
+        });
         setVisible(true);
     }
 }

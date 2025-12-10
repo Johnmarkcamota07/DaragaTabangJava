@@ -4,8 +4,8 @@ import com.UI.LoginWindow;
 import java.awt.*;
 import javax.swing.*;
 
-public class Main {
-    public static void main (String[] args) {
+public class Main extends JFrame{
+    public Main(){
         JFrame frame = new JFrame("DaragaTabang");
         frame.setSize(500, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,9 +44,14 @@ public class Main {
         btnEnter.addActionListener(e -> {
             LoginWindow loginWindow = new LoginWindow(); 
             loginWindow.setVisible(true);
+            frame.dispose();
         });
 
         frame.add(panel);
         frame.setVisible(true);
     }
+    public static void main (String[] args) {
+        new Main().setVisible(true);
+    }
 }
+
