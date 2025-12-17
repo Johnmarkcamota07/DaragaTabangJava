@@ -7,6 +7,7 @@ import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import com.daragatabang.DaragaTabangNet;
 
@@ -51,10 +52,13 @@ public class UserDashboard extends JFrame {
         add(logout,gbc);
 
         logout.addActionListener(e -> {
-            DaragaTabangNet main = new DaragaTabangNet();
-            main.setVisible(true);
-            dispose();
+            int response = JOptionPane.showConfirmDialog(this,"Are you sure you want to log out?", "Confirm Action", JOptionPane.YES_NO_OPTION);
+            if(response == JOptionPane.YES_OPTION)
+            {
+                DaragaTabangNet main = new DaragaTabangNet();
+                main.setVisible(true);
+                dispose();
+            }
         });
-
     }
 }
