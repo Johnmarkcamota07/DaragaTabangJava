@@ -1,7 +1,14 @@
 package com.UI;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import com.daragatabang.DaragaTabangNet;
 
 public class UserDashboard extends JFrame {
     public UserDashboard(String name) {
@@ -9,16 +16,45 @@ public class UserDashboard extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        String uppername = name.toUpperCase();
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        gbc.gridx = 3; gbc.gridy = 1;
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel greetings = new JLabel("Welcome " + uppername + "!");
+        greetings.setFont(new java.awt.Font("SegoeUI", java.awt.Font.BOLD, 32));
+        greetings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        add(greetings,gbc);
+
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridwidth = 1; gbc.weightx = 0.5;
+        gbc.anchor = GridBagConstraints.CENTER;
+        java.awt.Dimension buttonSize = new java.awt.Dimension(200, 40);
+
+        gbc.gridx = 0; gbc.gridy = 1;
         JButton createAddTicket = new JButton("Create Ticket");
+        createAddTicket.setPreferredSize(buttonSize);
         add(createAddTicket,gbc);
 
+        gbc.gridx = 0; gbc.gridy = 2;
+        JButton viewSubmittedTicket = new JButton("View Submitted Ticket");
+        viewSubmittedTicket.setPreferredSize(buttonSize);
+        add(viewSubmittedTicket,gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        JButton logout = new JButton("Log out");
+        logout.setPreferredSize(buttonSize);
+        add(logout,gbc);
+
+        logout.addActionListener(e -> {
+            DaragaTabangNet main = new DaragaTabangNet();
+            main.setVisible(true);
+            dispose();
+        });
 
     }
 }
