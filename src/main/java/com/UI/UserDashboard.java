@@ -68,7 +68,7 @@ public class UserDashboard extends JFrame {
         });
 
         viewSubmittedTicket.addActionListener(e ->{
-            ViewTicketsUser viewTicket = new ViewTicketsUser(user);
+            ViewTicketsUser viewTicket = new ViewTicketsUser(name,user);
             viewTicket.setVisible(true);
             dispose();
         });
