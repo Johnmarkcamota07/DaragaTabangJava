@@ -11,7 +11,7 @@ public class ticket {
     private String ticketTitle;
     private final String ticketDescription;
     private final String ticketCreatedBy;
-    private final String ticketPriority;
+    private final Priority ticketPriority;
     private final String ticketCategory;
     private Status ticketStatus;
     private String ticketAssignedTo;
@@ -27,7 +27,7 @@ public class ticket {
         this.ticketTitle = title;
         this.ticketDescription = description;
         this.ticketCreatedBy = createdBy;
-        this.ticketPriority = priority;
+        this.ticketPriority = Priority.valueOf(priority.toUpperCase());
         this.ticketCategory = category;
         this.ticketStatus = Status.PENDING;
         this.ticketCreatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
@@ -57,7 +57,7 @@ public class ticket {
     return ticketDescription;
     }
 
-    public String getPriority() {
+    public Priority getPriority() {
         return ticketPriority;
     }
 

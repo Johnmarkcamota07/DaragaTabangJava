@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import com.utils.Priority;
 import com.utils.haystackManager;
 import com.utils.ticket;
 
@@ -27,7 +28,7 @@ public class CreateTicket extends JDialog{
 
     private final JTextField titleField;
     private final JTextArea descriptionArea;
-    private final JComboBox<String> priorityBox;
+    private final JComboBox<Priority> priorityBox;
     private final JComboBox<String> categoryBox;
 
     public CreateTicket(Frame owner,String userFullName) {
@@ -71,7 +72,7 @@ public class CreateTicket extends JDialog{
         add(new JLabel("Priority:"), gbc);
 
         gbc.gridx = 1;
-        String[] priorities = {"Low", "Medium", "High"};
+        Priority[] priorities = Priority.values();
         priorityBox = new JComboBox<>(priorities);
         add(priorityBox, gbc);
 
@@ -112,7 +113,7 @@ public class CreateTicket extends JDialog{
         }
 
         String category = (String) categoryBox.getSelectedItem();
-        String priority = (String) priorityBox.getSelectedItem();
+        String priority = ((Priority) priorityBox.getSelectedItem()).toString();
 
         ticket newTicket = new ticket(title, description, this.currentUser, priority, category);
 
