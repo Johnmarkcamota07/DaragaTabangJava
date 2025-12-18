@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import com.utils.haystackManager;
 
@@ -43,9 +44,13 @@ public class ViewTicketsUser extends JFrame {
 
         ticketTable = new JTable(tableModel);
         ticketTable.setRowHeight(30);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        ticketTable.setRowSorter(sorter);
+
         ticketTable.getColumn("Action").setCellRenderer(new ButtonRenderer());
         ticketTable.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
-        
+        ticketTable.getColumnModel().getColumn(6).setPreferredWidth(100);
         add(new JScrollPane(ticketTable), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -109,7 +114,6 @@ public class ViewTicketsUser extends JFrame {
             button = new JButton();
             button.setOpaque(true);
             button.addActionListener(e -> fireEditingStopped());
-            ticketTable.getColumnModel().getColumn(6).setPreferredWidth(100);
         }
 
         @Override

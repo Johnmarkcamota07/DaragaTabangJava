@@ -1,6 +1,7 @@
 package com.utils;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ticket {
@@ -12,9 +13,9 @@ public class ticket {
     private final String ticketCreatedBy;
     private final String ticketPriority;
     private final String ticketCategory;
-    private String ticketStatus;
+    private Status ticketStatus;
     private String ticketAssignedTo;
-    private final LocalDateTime ticketCreatedAt;
+    private final String ticketCreatedAt;
     private LocalDateTime ticketClosedAt;
 
     public static void initiallizedIdCounter(int lastId){
@@ -28,8 +29,8 @@ public class ticket {
         this.ticketCreatedBy = createdBy;
         this.ticketPriority = priority;
         this.ticketCategory = category;
-        this.ticketStatus = "Open";
-        this.ticketCreatedAt = LocalDateTime.now();
+        this.ticketStatus = Status.PENDING;
+        this.ticketCreatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.ticketAssignedTo = null;
         this.ticketClosedAt = null;
     }
@@ -47,7 +48,7 @@ public class ticket {
         this.ticketTitle = title;
     }
 
-    public String getStatus()
+    public Status getStatus()
     {
         return ticketStatus;
     }
@@ -67,22 +68,21 @@ public class ticket {
     public String getTicketCreatedBy(){
         return ticketCreatedBy;
     }
+    public String getTicketCreatedAt() {
+        return ticketCreatedAt; 
+    }
 
-    public java.time.LocalDateTime getTicketCreatedAt() {
-        return ticketCreatedAt;
-}
-
-    public void setStatus(String newStatus)
+public void setStatus(Status newStatus)
     {
-        String oldStatus = this.ticketStatus;
+        Status oldStatus = this.ticketStatus;
         this.ticketStatus = newStatus;
 
         System.out.println("Ticket " + this.ticketID + "status changed from " + oldStatus + "to" + newStatus);
 
-        if (newStatus.equalsIgnoreCase("Closed") || newStatus.equalsIgnoreCase("Resolved")){
+        if (newStatus == Status.COMPLETED || newStatus == Status.CANCELLED){
             this.ticketClosedAt = LocalDateTime.now();
-            System.out.println("Ticket closedd at:" + this.ticketClosedAt);
-        }else if(oldStatus.equalsIgnoreCase("Closed") && !newStatus.equalsIgnoreCase("Closed"))
+            System.out.println("Ticket closed at:" + this.ticketClosedAt);
+        }else if(oldStatus == Status.COMPLETED && newStatus != Status.COMPLETED)
         {
             this.ticketClosedAt = null;
         }
@@ -94,8 +94,8 @@ public class ticket {
 
     public void setAssignedTo(String assignedTo){
         this.ticketAssignedTo = assignedTo;
-        if(this.ticketStatus.equalsIgnoreCase("Open")){
-            this.ticketStatus = "Assigned";
+        if(this.ticketStatus == Status.PENDING){
+            this.ticketStatus = Status.IN_PROGRESS;
         }
         System.out.println("Ticket " + this.ticketID + " assigned to: " + assignedTo);
     }

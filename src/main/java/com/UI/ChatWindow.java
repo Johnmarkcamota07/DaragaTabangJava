@@ -1,19 +1,23 @@
 package com.UI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 
 import com.utils.ChatManager;
+import com.utils.haystackManager;
 
 public class ChatWindow extends JDialog {
 
@@ -26,28 +30,47 @@ public class ChatWindow extends JDialog {
     private Timer refreshTimer;
 
     public ChatWindow(Frame owner, int ticketID, String userFullName) {
-        super(owner, "Chat - Ticket #" + ticketID, false); // false to allow click back to viewticketsuser
+        super(owner, "Chat - Ticket #" + ticketID, false); 
         this.ticketID = ticketID;
         this.currentUser = userFullName;
         this.chatManager = new ChatManager();
 
         setSize(400, 500);
-        setLocationRelativeTo(owner); // Center relative to the Ticket List
+        setLocationRelativeTo(owner); 
         setLayout(new BorderLayout());
 
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(240, 240, 240)); // Light gray background
+        headerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Loading...");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        
+        JTextArea descLabel = new JTextArea("Loading description...");
+        descLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        descLabel.setWrapStyleWord(true);
+        descLabel.setLineWrap(true);
+        descLabel.setEditable(false);
+        descLabel.setOpaque(false); // Make it blend with background
+        descLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
+
+        headerPanel.add(titleLabel, BorderLayout.NORTH);
+        headerPanel.add(descLabel, BorderLayout.CENTER);
+        
+        // Add Header to the very top of the window
+        add(headerPanel, BorderLayout.NORTH);
+
+        loadTicketDetails(ticketID, titleLabel, descLabel);
         //CHAT DATA
         chatArea = new JTextArea();
         chatArea.setEditable(false); // Read only
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
         chatArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        chatArea.setMargin(new Insets(10, 10, 10, 10)); // Add some padding inside
+        chatArea.setMargin(new Insets(10, 10, 10, 10)); 
         
-        // Auto-scroll logic
         JScrollPane scrollPane = new JScrollPane(chatArea);
         add(scrollPane, BorderLayout.CENTER);
-
-        // --- 2. INPUT AREA (Bottom) ---
         JPanel bottomPanel = new JPanel(new BorderLayout());
         inputField = new JTextField();
         JButton sendButton = new JButton("Send");
@@ -56,19 +79,16 @@ public class ChatWindow extends JDialog {
         bottomPanel.add(sendButton, BorderLayout.EAST);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // --- 3. ACTIONS ---
         sendButton.addActionListener(e -> sendMsg());
         inputField.addActionListener(e -> sendMsg()); // Allow pressing "Enter" key
 
-        // --- 4. AUTO-REFRESH TIMER ---
+        // ---  AUTO-REFRESH TIMER ---
         // Checks for new messages every 2 seconds
         refreshTimer = new Timer(2000, e -> loadChats());
         refreshTimer.start();
 
-        // Load messages immediately when opening
         loadChats();
         
-        // Stop the timer when window is closed (Save memory)
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -77,23 +97,36 @@ public class ChatWindow extends JDialog {
         });
     }
 
+    private void loadTicketDetails(int id, JLabel titleLbl, JTextArea descLbl) {
+        haystackManager manager = new haystackManager();
+        String rawData = manager.getLatestTicket(String.valueOf(id));
+
+        if (rawData != null && !rawData.startsWith("Error")) {
+            String[] parts = rawData.split("\\|");
+            if (parts.length >= 8) {
+                titleLbl.setText("Ticket #" + parts[0] + ": " + parts[2]); // Title
+                descLbl.setText(parts[7]); 
+            }
+        } else {
+            titleLbl.setText("Ticket #" + id);
+            descLbl.setText("Could not load description.");
+        }
+    }
     private void sendMsg() {
         String msg = inputField.getText().trim();
         if (!msg.isEmpty()) {
             chatManager.sendMessage(ticketID, currentUser, msg);
-            inputField.setText(""); // Clear input box
-            loadChats(); // Show the new message immediately
+            inputField.setText("");
+            loadChats();
         }
     }
 
     private void loadChats() {
         String history = chatManager.getChatHistory(ticketID);
         
-        // Only update if the text has actually changed (prevents flickering)
         if (!chatArea.getText().equals(history)) {
             chatArea.setText(history);
-            
-            // Auto-scroll to the bottom to see new message
+
             chatArea.setCaretPosition(chatArea.getDocument().getLength());
         }
     }
