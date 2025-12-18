@@ -1,6 +1,10 @@
 package com.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -38,7 +42,7 @@ public class haystackManager {
                         }
 
                     } catch (NumberFormatException e) {
-                        LOGGER.log(Level.FINE,"improper format");
+                        LOGGER.log(Level.FINE,"improper format",e);
                     }
                 }
                 currentPos = file.getFilePointer();
@@ -87,6 +91,7 @@ public class haystackManager {
             file.seek(indexMap.get(id));
             return file.readLine();
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);
             return "Error reading file.";
         }
     }
@@ -114,4 +119,96 @@ public class haystackManager {
         }
         return userTickets;
     }
+
+    public void assignTicket(int ticketId, String adminName) {
+        File inputFile = new File("data/tickets.db");
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) 
+        {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length > 0) {
+                    try {
+                        int currentId = Integer.parseInt(parts[0]);
+                        if (currentId == ticketId) {
+                            // REBUILD LINE WITH ASSIGNED ADMIN AT INDEX 8
+                            String base = "";
+                            for(int i=0; i<parts.length && i<8; i++) {
+                                base += parts[i] + "|";
+                            }
+                            // Pad if missing data
+                            while (base.split("\\|").length < 8) {
+                                base += "N/A|";
+                            }
+                            line = base + adminName; 
+
+                            // Auto-update PENDING to IN_PROGRESS
+                            if (parts.length > 3 && parts[3].equals("PENDING")) {
+                                line = line.replace("|PENDING|", "|IN_PROGRESS|");
+                            }
+                            found = true;
+                        }
+                    } catch (NumberFormatException ignored) {}
+                }
+                lines.add(line);
+            }
+        } catch (IOException e) { LOGGER.log(Level.SEVERE, "fail to read data / file not found", e); }
+
+        if (found) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
+                for (String l : lines) {
+                    writer.write(l);
+                    writer.newLine();
+                }
+            } catch (IOException e) { LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);}
+        }
+    }
+    public List<String[]> getAllTickets() {
+        List<String[]> list = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("data/tickets.db"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                list.add(line.split("\\|"));
+            }
+        } catch (IOException e) { LOGGER.log(Level.SEVERE, "fail to read data / file not found", e); }
+        return list;
+    }
+
+    public void updateTicketStatus(int ticketId, Status newStatus) {
+    File inputFile = new File("data/tickets.db");
+    List<String> lines = new ArrayList<>();
+    boolean found = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split("\\|");
+            if (parts.length > 0) {
+                try {
+                    int currentId = Integer.parseInt(parts[0]);
+                    if (currentId == ticketId) {
+                        if (parts.length >= 4) {
+                            parts[3] = newStatus.name(); 
+                            found = true;
+                        }
+                        line = String.join("|", parts);
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+            lines.add(line);
+        }
+    } catch (IOException e) { LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);}
+
+    if (found) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
+            for (String l : lines) {
+                writer.write(l);
+                writer.newLine();
+            }
+        } catch (IOException e) { LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);}
+    }
+}
 }

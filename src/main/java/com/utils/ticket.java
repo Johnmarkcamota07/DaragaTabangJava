@@ -12,7 +12,7 @@ public class ticket {
     private final String ticketDescription;
     private final String ticketCreatedBy;
     private final Priority ticketPriority;
-    private final String ticketCategory;
+    private final Category ticketCategory;
     private Status ticketStatus;
     private String ticketAssignedTo;
     private final String ticketCreatedAt;
@@ -28,7 +28,7 @@ public class ticket {
         this.ticketDescription = description;
         this.ticketCreatedBy = createdBy;
         this.ticketPriority = Priority.valueOf(priority.toUpperCase());
-        this.ticketCategory = category;
+        this.ticketCategory = Category.valueOf(category.toUpperCase());
         this.ticketStatus = Status.PENDING;
         this.ticketCreatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.ticketAssignedTo = null;
@@ -61,7 +61,7 @@ public class ticket {
         return ticketPriority;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return ticketCategory;
     }
 

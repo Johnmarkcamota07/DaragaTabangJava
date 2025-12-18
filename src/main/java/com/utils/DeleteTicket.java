@@ -70,7 +70,7 @@ public class DeleteTicket {
                             // Match found: Move to Archive
                             appendToArchive(archiveFile, line);
                         } else {
-                            // Not a match: Keep in main DB
+                            // Not a match: Keep in Tickets DB
                             keptLines.add(line);
                         }
                     } catch (NumberFormatException e) {
