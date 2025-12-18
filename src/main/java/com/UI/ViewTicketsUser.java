@@ -234,14 +234,11 @@ public class ViewTicketsUser extends JFrame {
 
                     if (confirm == JOptionPane.YES_OPTION) {
                         SwingUtilities.invokeLater(() -> {
-                            // 1. Call backend logic
                             DeleteTicket.archiveAndDelete(ticketId);
                             
-                            // 2. Refresh Table
                             tableModel.setRowCount(0);
                             loadUserTickets(user);
                             
-                            // 3. Show Success
                             JOptionPane.showMessageDialog(null, "Ticket Deleted and Archived.");
                         });
                     }
