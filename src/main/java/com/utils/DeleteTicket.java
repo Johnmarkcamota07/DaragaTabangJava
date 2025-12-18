@@ -74,7 +74,7 @@ public class DeleteTicket {
                             keptLines.add(line);
                         }
                     } catch (NumberFormatException e) {
-                        keptLines.add(line); // Keep corrupted/header lines just in case
+                        keptLines.add(line); // Keep error or broken lines just in case
                     }
                 }
             }

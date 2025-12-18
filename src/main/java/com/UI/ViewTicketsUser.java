@@ -52,7 +52,13 @@ public class ViewTicketsUser extends JFrame {
 
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
         ticketTable.setRowSorter(sorter);
-
+        ticketTable.getTableHeader().setReorderingAllowed(false);
+        try {
+            sorter.setSortable(6, false);
+            sorter.setSortable(7, false);
+        } catch (Exception ignored) {
+            System.out.println("Could not disable sorting: " + ignored.getMessage());
+        }
         sorter.setComparator(3, (String s1, String s2) -> {
             try {
                 return Status.valueOf(s1).compareTo(Status.valueOf(s2));
