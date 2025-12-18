@@ -1,8 +1,6 @@
 package com.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
@@ -19,10 +17,10 @@ public class haystackManager {
         rebuildIndex();
     }
 
-    private void rebuildIndex() {
+    public final void rebuildIndex() {
         File databaseFile = new File(FILE_PATH);
         if (!databaseFile.exists()) return;
-
+        int maxId = 1000;
         try (RandomAccessFile file = new RandomAccessFile(databaseFile, "r")) {
             String line;
             long currentPos = 0;
@@ -30,9 +28,22 @@ public class haystackManager {
                 String[] data = line.split("\\|");
                 if (data.length > 0) {
                     indexMap.put(data[0], currentPos);
+                    try {
+                        int currentId = Integer.parseInt(data[0]);
+                        if(currentId > maxId)
+                        {
+                            maxId = currentId;
+                        }
+
+                    } catch (NumberFormatException e) {
+                        LOGGER.log(Level.FINE,"improper format");
+                    }
                 }
                 currentPos = file.getFilePointer();
             }
+
+            ticket.initiallizedIdCounter(maxId);
+            System.out.println("Ticket ID counter initialized to: " + (maxId + 1));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);
         }
@@ -72,37 +83,6 @@ public class haystackManager {
             return file.readLine();
         } catch (IOException e) {
             return "Error reading file.";
-        }
-    }
-
-    public static void loadLastTicketId() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return; 
-
-        int maxId = 1000; //DEFAULT 
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                
-                if (parts.length > 0) {
-                    try {
-                        int currentId = Integer.parseInt(parts[0]);
-                        if (currentId > maxId) {
-                            maxId = currentId;
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("nothing");
-                    }
-                }
-            }
-
-            ticket.initiallizedIdCounter(maxId);
-            System.out.println("Ticket ID counter initialized to: " + (maxId + 1));
-
-        } catch (IOException e) {
-            LOGGER.log(Level.FINE, "file not found");
         }
     }
 }

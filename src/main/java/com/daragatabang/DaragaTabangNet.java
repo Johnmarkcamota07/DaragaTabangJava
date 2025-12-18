@@ -67,7 +67,7 @@ public class DaragaTabangNet extends JFrame{
     }
     public static void main (String[] args) {
         SwingUtilities.invokeLater(() -> {
-            com.utils.haystackManager.loadLastTicketId();
+            new com.utils.haystackManager().rebuildIndex();
             DaragaTabangNet app = new DaragaTabangNet();
             app.setVisible(true);
         });
