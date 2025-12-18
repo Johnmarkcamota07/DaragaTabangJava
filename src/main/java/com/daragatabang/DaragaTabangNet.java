@@ -21,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.UI.LoginWindow;
-
+import com.utils.haystackManager;
 public class DaragaTabangNet extends JFrame{
     public DaragaTabangNet(){
         super("DaragaTabang");
@@ -67,7 +67,8 @@ public class DaragaTabangNet extends JFrame{
     }
     public static void main (String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new com.utils.haystackManager().rebuildIndex();
+            haystackManager update = new haystackManager();
+            update.rebuildIndex();
             DaragaTabangNet app = new DaragaTabangNet();
             app.setVisible(true);
         });

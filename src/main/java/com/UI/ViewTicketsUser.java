@@ -13,12 +13,10 @@ import com.utils.haystackManager;
 
 
 public class ViewTicketsUser extends JFrame {
-    private String username;
-    private JTable ticketTable;
-    private DefaultTableModel tableModel;
+    private final JTable ticketTable;
+    private final DefaultTableModel tableModel;
     public ViewTicketsUser(String user)
     {
-        this.username = user;
         setTitle("Vew Tickets");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800,600);

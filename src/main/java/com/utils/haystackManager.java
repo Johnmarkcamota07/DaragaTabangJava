@@ -14,7 +14,7 @@ public class haystackManager {
     private static final Logger LOGGER = Logger.getLogger(haystackManager.class.getName());
     private static final String FILE_PATH = "data/tickets.db";
     private final Map<String, Long> indexMap = new HashMap<>();
-
+    private static boolean isPrinted = false;
     public haystackManager() {
         rebuildIndex();
     }
@@ -43,9 +43,12 @@ public class haystackManager {
                 }
                 currentPos = file.getFilePointer();
             }
-
-            ticket.initiallizedIdCounter(maxId);
-            System.out.println("Ticket ID counter initialized to: " + (maxId + 1));
+            if(!isPrinted)
+            {            
+                ticket.initiallizedIdCounter(maxId);
+                System.out.println("Ticket ID counter initialized to: " + (maxId + 1));
+                isPrinted = true;
+            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "fail to read data / file not found", e);
         }
