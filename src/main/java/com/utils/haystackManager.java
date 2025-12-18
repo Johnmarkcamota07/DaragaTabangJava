@@ -1,7 +1,12 @@
 package com.utils;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,19 +38,29 @@ public class haystackManager {
         }
     }
 
-    public void saveOrUpdateTicket(String id, String date, String name, String status, String description) {
+    public boolean saveOrUpdateTicket(ticket t) {
         try (RandomAccessFile file = new RandomAccessFile(FILE_PATH, "rw")) {
             long endPosition = file.length();
             file.seek(endPosition);
             
-            String record = id + "|" + date + "|" + name + "|" + status + "|" + description;
+            String safeDesc = t.getDescription().replace("\n", " ");
+            String record = t.getTicketId() + "|" + 
+                            t.getTicketCreatedAt() + "|" + 
+                            t.getTitle() + "|" + 
+                            t.getStatus() + "|" + 
+                            t.getPriority() + "|" +
+                            t.getCategory() + "|" + 
+                            t.getTicketCreatedBy() + "|" +
+                            safeDesc;
             file.writeBytes(record + "\n");
             
-            indexMap.put(id, endPosition);
-            System.out.println("Saved Ticket " + id);
+            indexMap.put(String.valueOf(t.getTicketId()), endPosition);
+            System.out.println("Saved Ticket " + t.getTicketId() + " at pos: " + endPosition);
+            return true;
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "ticket error",e);
+            return false;
         }
     }
 
@@ -57,6 +72,37 @@ public class haystackManager {
             return file.readLine();
         } catch (IOException e) {
             return "Error reading file.";
+        }
+    }
+
+    public static void loadLastTicketId() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) return; 
+
+        int maxId = 1000; //DEFAULT 
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                
+                if (parts.length > 0) {
+                    try {
+                        int currentId = Integer.parseInt(parts[0]);
+                        if (currentId > maxId) {
+                            maxId = currentId;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("nothing");
+                    }
+                }
+            }
+
+            ticket.initiallizedIdCounter(maxId);
+            System.out.println("Ticket ID counter initialized to: " + (maxId + 1));
+
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "file not found");
         }
     }
 }

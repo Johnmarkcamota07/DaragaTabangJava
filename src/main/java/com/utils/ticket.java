@@ -8,15 +8,18 @@ public class ticket {
 
     private final int ticketID;
     private String ticketTitle;
-    private String ticketDescription;
-    private String ticketCreatedBy;
+    private final String ticketDescription;
+    private final String ticketCreatedBy;
     private final String ticketPriority;
-    private String ticketCategory;
+    private final String ticketCategory;
     private String ticketStatus;
     private String ticketAssignedTo;
-    private LocalDateTime ticketCreatedAt;
+    private final LocalDateTime ticketCreatedAt;
     private LocalDateTime ticketClosedAt;
 
+    public static void initiallizedIdCounter(int lastId){
+        ID_GENERATOR.set(lastId + 1);
+    }
     public ticket(String title, String description, String createdBy, String priority, String category){
         this.ticketID = ID_GENERATOR.getAndIncrement();
 
@@ -48,6 +51,26 @@ public class ticket {
     {
         return ticketStatus;
     }
+
+    public String getDescription() {
+    return ticketDescription;
+    }
+
+    public String getPriority() {
+        return ticketPriority;
+    }
+
+    public String getCategory() {
+        return ticketCategory;
+    }
+
+    public String getTicketCreatedBy(){
+        return ticketCreatedBy;
+    }
+
+    public java.time.LocalDateTime getTicketCreatedAt() {
+        return ticketCreatedAt;
+}
 
     public void setStatus(String newStatus)
     {

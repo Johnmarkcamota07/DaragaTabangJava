@@ -8,9 +8,19 @@ package com.daragatabang;
  *
  * @author John Mark
  */
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+
 import com.UI.LoginWindow;
-import java.awt.*;
-import javax.swing.*;
 
 public class DaragaTabangNet extends JFrame{
     public DaragaTabangNet(){
@@ -57,6 +67,7 @@ public class DaragaTabangNet extends JFrame{
     }
     public static void main (String[] args) {
         SwingUtilities.invokeLater(() -> {
+            com.utils.haystackManager.loadLastTicketId();
             DaragaTabangNet app = new DaragaTabangNet();
             app.setVisible(true);
         });
