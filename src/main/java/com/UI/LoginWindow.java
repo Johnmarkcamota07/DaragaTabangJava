@@ -67,7 +67,7 @@ public class LoginWindow extends JFrame {
                 if (role.equals("ADMIN")) {
                      new AdminDashboard().setVisible(true);
                 } else {
-                     new UserDashboard(name).setVisible(true);
+                     new UserDashboard(name,user).setVisible(true);
                 }
 
             } else {

@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import com.daragatabang.DaragaTabangNet;
 
 public class UserDashboard extends JFrame {
-    public UserDashboard(String name) {
+    public UserDashboard(String name, String user) {
         setTitle("User Dashboard");
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -63,7 +63,7 @@ public class UserDashboard extends JFrame {
         });
 
         createAddTicket.addActionListener(e -> {
-            CreateTicket create = new CreateTicket(this, name);
+            CreateTicket create = new CreateTicket(this, user);
             create.setVisible(true);
         });
 
