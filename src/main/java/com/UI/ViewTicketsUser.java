@@ -4,16 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
@@ -95,12 +98,25 @@ public class ViewTicketsUser extends JFrame {
             openUserDashboard.setVisible(true);
             dispose();
         });
+
+        loadUserTickets(user);
+
+        if (tableModel.getRowCount() == 0) {
+            JLabel emptyLabel = new JLabel("NO TICKETS SENT YET", SwingConstants.CENTER);
+            emptyLabel.setFont(new Font("Segoe UI", Font.BOLD, 24)); 
+            emptyLabel.setForeground(Color.GRAY);
+            
+            add(emptyLabel, BorderLayout.CENTER);
         
+        } else 
+        {
+            add(new JScrollPane(ticketTable), BorderLayout.CENTER);
+        }
+   
         buttonPanel.add(refreshButton);
         buttonPanel.add(closeButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        loadUserTickets(user);
     }  
 
     private void loadUserTickets(String user)  
@@ -217,10 +233,17 @@ public class ViewTicketsUser extends JFrame {
                         "Confirm Deletion", JOptionPane.YES_NO_OPTION);
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        DeleteTicket.archiveAndDelete(ticketId);
-                        tableModel.setRowCount(0);
-                        loadUserTickets(user);
-                        JOptionPane.showMessageDialog(null, "Ticket Deleted and Archived.");
+                        SwingUtilities.invokeLater(() -> {
+                            // 1. Call backend logic
+                            DeleteTicket.archiveAndDelete(ticketId);
+                            
+                            // 2. Refresh Table
+                            tableModel.setRowCount(0);
+                            loadUserTickets(user);
+                            
+                            // 3. Show Success
+                            JOptionPane.showMessageDialog(null, "Ticket Deleted and Archived.");
+                        });
                     }
                 }
             }

@@ -1,20 +1,17 @@
 package com.UI;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 
 import com.utils.ChatManager;
 import com.utils.haystackManager;
@@ -29,8 +26,11 @@ public class ChatWindow extends JDialog {
     private final JTextField inputField;
     private Timer refreshTimer;
 
+    private String ticketTitle = "Loading...";
+    private String ticketDesc = "";
+
     public ChatWindow(Frame owner, int ticketID, String userFullName) {
-        super(owner, "Chat - Ticket #" + ticketID, false); 
+        super(owner, "Chat - Ticket #" + ticketID, true); 
         this.ticketID = ticketID;
         this.currentUser = userFullName;
         this.chatManager = new ChatManager();
@@ -39,28 +39,8 @@ public class ChatWindow extends JDialog {
         setLocationRelativeTo(owner); 
         setLayout(new BorderLayout());
 
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(240, 240, 240)); // Light gray background
-        headerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        JLabel titleLabel = new JLabel("Loading...");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        loadTicketDetails(ticketID);
         
-        JTextArea descLabel = new JTextArea("Loading description...");
-        descLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
-        descLabel.setWrapStyleWord(true);
-        descLabel.setLineWrap(true);
-        descLabel.setEditable(false);
-        descLabel.setOpaque(false); // Make it blend with background
-        descLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
-
-        headerPanel.add(titleLabel, BorderLayout.NORTH);
-        headerPanel.add(descLabel, BorderLayout.CENTER);
-        
-        // Add Header to the very top of the window
-        add(headerPanel, BorderLayout.NORTH);
-
-        loadTicketDetails(ticketID, titleLabel, descLabel);
         //CHAT DATA
         chatArea = new JTextArea();
         chatArea.setEditable(false); // Read only
@@ -82,7 +62,7 @@ public class ChatWindow extends JDialog {
         sendButton.addActionListener(e -> sendMsg());
         inputField.addActionListener(e -> sendMsg()); // Allow pressing "Enter" key
 
-        // ---  AUTO-REFRESH TIMER ---
+        //Auto refresh
         // Checks for new messages every 2 seconds
         refreshTimer = new Timer(2000, e -> loadChats());
         refreshTimer.start();
@@ -97,19 +77,21 @@ public class ChatWindow extends JDialog {
         });
     }
 
-    private void loadTicketDetails(int id, JLabel titleLbl, JTextArea descLbl) {
+    private void loadTicketDetails(int id) {
         haystackManager manager = new haystackManager();
         String rawData = manager.getLatestTicket(String.valueOf(id));
 
         if (rawData != null && !rawData.startsWith("Error")) {
             String[] parts = rawData.split("\\|");
+            // 0=ID, 1=Date, 2=Title, 3=Status, 4=Priority, 5=Category, 6=CreatedBy, 7=Description
             if (parts.length >= 8) {
-                titleLbl.setText("Ticket #" + parts[0] + ": " + parts[2]); // Title
-                descLbl.setText(parts[7]); 
+                this.ticketTitle = parts[2]; // Title
+                this.ticketDesc = parts[7];  // Description
             }
-        } else {
-            titleLbl.setText("Ticket #" + id);
-            descLbl.setText("Could not load description.");
+        } 
+        else 
+        {
+            this.ticketDesc = "Could not load ticket details.";
         }
     }
     private void sendMsg() {
@@ -122,12 +104,21 @@ public class ChatWindow extends JDialog {
     }
 
     private void loadChats() {
+        String headerText = """
+                            === TICKET DETAILS ===
+                            TITLE: """ + ticketTitle + "\n" +
+                            "DESC: " + ticketDesc + "\n" +
+                            "======================\n\n";
+
+        //Get Actual Chat History
         String history = chatManager.getChatHistory(ticketID);
         
-        if (!chatArea.getText().equals(history)) {
-            chatArea.setText(history);
+        String fullText = headerText + history;
 
-            chatArea.setCaretPosition(chatArea.getDocument().getLength());
+        // Only update if text changed
+        if (!chatArea.getText().equals(fullText)) {
+            chatArea.setText(fullText);
+            chatArea.setCaretPosition(chatArea.getDocument().getLength()); // Scroll to bottom
         }
     }
 }
