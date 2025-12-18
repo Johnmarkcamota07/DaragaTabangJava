@@ -3,7 +3,9 @@ package com.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,5 +86,29 @@ public class haystackManager {
         } catch (IOException e) {
             return "Error reading file.";
         }
+    }
+
+    public List<String[]> getUserTickets(String Username){
+        List<String[]> userTickets = new ArrayList<>();
+
+        try(RandomAccessFile file = new RandomAccessFile(FILE_PATH, "r")){
+            for(Long position : indexMap.values())
+            {
+                file.seek(position);
+                String line = file.readLine();
+
+                if(line != null)
+                {
+                    String[] parts = line.split("\\|");
+                    if(parts.length > 6 && parts[6].equals(Username)){
+                        userTickets.add(parts);
+                    }
+                }
+            }
+        }catch(IOException e)
+        {
+            LOGGER.log(Level.SEVERE, "Error fetching tickets");
+        }
+        return userTickets;
     }
 }

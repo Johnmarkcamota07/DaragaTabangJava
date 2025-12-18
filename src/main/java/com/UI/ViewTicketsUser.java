@@ -1,7 +1,7 @@
 package com.UI;
 
 import java.awt.BorderLayout;
-import java.io.File;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -9,15 +9,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.utils.haystackManager;
+
 
 public class ViewTicketsUser extends JFrame {
-    private String user;
+    private String username;
     private JTable ticketTable;
     private DefaultTableModel tableModel;
-    private final String FILE_PATH = "data/tickets.db";
     public ViewTicketsUser(String user)
     {
-        this.user = user;
+        this.username = user;
         setTitle("Vew Tickets");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800,600);
@@ -35,17 +36,24 @@ public class ViewTicketsUser extends JFrame {
         ticketTable = new JTable(tableModel);
 
         add(new JScrollPane(ticketTable), BorderLayout.CENTER);
-        loadUserTickets();
+        loadUserTickets(user, tableModel);
     }  
 
-    private void loadUserTickets()  
+    private void loadUserTickets(String user, DefaultTableModel model)  
     {
-        File file = new File(FILE_PATH);
-        if(!file.exists()){
-            JOptionPane.showMessageDialog(this, "NO TICKETS DATABASE FOUND");
+        haystackManager manager = new haystackManager();
+        List<String[]> tickets = manager.getUserTickets(user);
+        if(tickets.isEmpty()){
+            JOptionPane.showMessageDialog(this, "No Tickets Found for user: " + user);
         }
 
-        
+        for (String[] t : tickets)
+        {
+            Object[] row = {
+                t[0],t[1],t[2],t[3],t[4],t[5]
+            };
 
+            model.addRow(row);
+        }
     }
 }
