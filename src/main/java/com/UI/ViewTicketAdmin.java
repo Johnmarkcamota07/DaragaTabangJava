@@ -273,7 +273,7 @@ public class ViewTicketAdmin extends JFrame {
         }
         @Override
         public Object getCellEditorValue() {
-            if (isPushed && "Claim".equals(label)) { // allow action if not yet "Assigned"
+            if (isPushed && "Claim".equals(label)) { // allow action if not yet Assigned
                 int modelRow = tableRef.convertRowIndexToModel(tableRef.getEditingRow());
                 String idStr = tableRef.getModel().getValueAt(modelRow, 0).toString();
                 int ticketId = Integer.parseInt(idStr);
@@ -283,13 +283,17 @@ public class ViewTicketAdmin extends JFrame {
                     "Claim Ticket", JOptionPane.YES_NO_OPTION);
                 
                 if (response == JOptionPane.YES_OPTION) {
-                    // 1. Update Database
+                    SwingUtilities.invokeLater(() -> {                        
+                    // Update database
                     haystackManager manager = new haystackManager();
                     manager.assignTicket(ticketId, currentAdmin);
                     
-                    // 2. Refresh Table
+                    //Refresh tickets
                     loadAllTickets();
+                    
                     JOptionPane.showMessageDialog(null, "Ticket successfully assigned to you!");
+                        
+                    });
                 }
             }
             isPushed = false;
